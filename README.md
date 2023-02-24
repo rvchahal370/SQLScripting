@@ -116,6 +116,48 @@ Select Source_of_joining, Count(*) from Students Group By source_of_joining
 /* Find out how many students get to know through the common source of Source_of_joining and location */
 Select location, Source_of_joining from Students Group By Source_of_joining, location
 
+Order of Execution
+=========================
+
+From, Join
+Where
+Group By
+Having
+
+Select
+Order By
+Limit
+Sorting
+Read the execution plan from Right to Left and Top to Bottom
+
+Seek and Scan
+--------------------------------------------------
+
+Seek is faster than scan because seek will be fetching the data from already sorted data but Scan will scan the whole data, means if their are n rows that in scan it will run n times.
+which is time consuming.
+
+Primary ID will be using the clustered index seek, because data in the column will be sorted.
+
+Clustered Index vs Non Clustered Index
+----------------------------------------------------
+
+Clustered means records will be physically sorted in the actual table.
+
+Note: Clustered index can be implemented on a one column only.
+
+Composite cluster index Example:- ClusterIndex(Customer_ID, Customer_Name)- means all the recodes in the Customer_Id will be sorted first but if there will be any duplicasy than records in the Customer_Id will be sorted with respect to Customer_Name.
+
+In the non clustered Index their will be a seperate index, in which Id and Address will be saved. Id will be sorted and Address will be linked to the primary index.
+
+For example if in a table where Order_Id is a primary key but we are searching on the based on Customer_Id then the seek operation will be implement on a Customer_Id as it will be stored in the different index along with the Address column,
+Address column will tell us where exacly we have to retreive the data from the main table. 
+So their will be two lookups performed- first one is for the Customer_ID in the secondary table and Second is for the actual table data through the address column in the seconday index.
+Now the customer_Id is sorted in the second index so that the seek will find the id first through the second index and than lookup for the actual table data through the Address field.
+
+Note: we can have any numbers of Non clustered Index.
+
+
+
 Where and Having Clause
 ===============================
 
