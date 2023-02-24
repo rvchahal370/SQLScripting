@@ -1,0 +1,76 @@
+Database vs Dataware House vs Data Lake
+================================================
+
+Database-
+-------------------------------------------------------------
+
+Store or works with the Transactional Data
+OLTP (Online Transaction Processing)
+Structured Data
+Recent Data- Day to Day Data
+Example- Online Banking Transaction
+databases are Oracle, MySql
+Follows Schema on Write
+
+Create Table Employee(
+EmployeeId INT,
+EmployeeName Varchar(50),
+Salary int
+)
+
+Insert into Employee values(....)
+
+During the insert it will compare the data with the table schema/Structure and if their is any mismatch it will throw an error.
+
+Cost to store the data in database is high.
+
+DatawareHouse- DWH
+--------------------------------------------------
+
+DatawareHouse can holds more data then DatawareHouse
+
+OLAP (Online Analytical Processing)- is a Technology that supports lasge business data and support complex analysis without negativelly affecting transactional systems.
+its is used for Analytical Processing where we require lots of historical data to find the insights.
+
+Why we are not using the Database for the Data Analytics?
+Firstly cost will increase.
+Secondaly, the moment we run complex queries on our database with an intent to do some Data Analytics the our current day to day transaction will become slow.
+And our exising users will be impacted.
+
+Thats why we take the data from database and migrate it to DatawareHouse to do some analytical processing.
+
+In DatawareHouse we migrate the data from multiple sources.
+
+Likewise Database, DatawareHouse is base on the structered Data and Schema on Write.
+
+Example of DatawareHouse is TeraData
+
+Overall Storage cost of datawareHouse is high but lesser than the cost of Database.
+
+It follows ETL Process
+
+E- Extract the Data from Database
+T- Transform the data into specific format(Its is complex and time consuming process)
+L- Load the data into DatawareHouse
+
+ETL Process reduce our Flexibility because we must follow all the steps including Transformation, No matter we require or not.
+
+Dala Lake-
+--------------------------------------
+
+Is used to get insights from huge amount of data.
+
+In that, data is present in its raw format and and It can be structured and Unstructured.
+
+Example:- we can directly can have log file in its raw format in the Data Lake.
+
+It follows ELT process:- Extract, Load, Transform
+
+Database Examples are HDFS, Amazon S3
+
+It is cost effetive and follows Schema on Read.
+
+Schema on Read means, first file like employee.csv will upload and then error check will be performed during the Creation of structure (to visualize or see the data).
+
+It gives the user enough Flexibility.
+
