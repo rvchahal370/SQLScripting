@@ -1,0 +1,63 @@
+Department Top Three Salaries:
+------------------------------------------
+
+Table: Employee
+
++--------------+---------+
+| Column Name  | Type    |
++--------------+---------+
+| id           | int     |
+| name         | varchar |
+| salary       | int     |
+| departmentId | int     |
++--------------+---------+
+id is the primary key column for this table.
+departmentId is a foreign key of the ID from the Department table.
+Each row of this table indicates the ID, name, and salary of an employee. It also contains the ID of their department.
+ 
+
+Table: Department
+
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| id          | int     |
+| name        | varchar |
++-------------+---------+
+id is the primary key column for this table.
+Each row of this table indicates the ID of a department and its name.
+ 
+
+A company's executives are interested in seeing who earns the most money in each of the company's departments. A high earner in a department is an employee who has a salary in the top three unique salaries for that department.
+
+Write an SQL query to find the employees who are high earners in each of the departments.
+
+Return the result table in any order.
+
+The query result format is in the following example.
+
+Solution:
+-------------------------------------------------
+
+Select ED.DE as 'Department', ED.AE as Employee, ED.salary AS Salary from (Select B.name AS DE, A.name AS AE, salary, DENSE_RANK() OVER (PARTITION BY DepartmentId Order by salary desc) AS C from Employee A JOIN Department B on A.DepartmentId = B.id) ED where ED.C < 4
+
+Table: Person
+
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| id          | int     |
+| email       | varchar |
++-------------+---------+
+id is the primary key column for this table.
+Each row of this table contains an email. The emails will not contain uppercase letters.
+ 
+
+Write an SQL query to delete all the duplicate emails, keeping only one unique email with the smallest id. Note that you are supposed to write a DELETE statement and not a SELECT one.
+
+After running your script, the answer shown is the Person table. The driver will first compile and run your piece of code and then show the Person table. The final order of the Person table does not matter.
+
+Solution:
+------------------------------------------
+
+Delete p1 from person p1, person p2 where p1.emailid = p2.emailid and p1.id > p2.id

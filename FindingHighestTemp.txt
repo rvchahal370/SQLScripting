@@ -1,0 +1,33 @@
+Table: Weather
+
++---------------+---------+
+| Column Name   | Type    |
++---------------+---------+
+| id            | int     |
+| recordDate    | date    |
+| temperature   | int     |
++---------------+---------+
+id is the primary key for this table.
+This table contains information about the temperature on a certain day.
+ 
+
+Write an SQL query to find all dates' Id with higher temperatures compared to its previous dates (yesterday).
+
+Return the result table in any order.
+
+
+First Solution:
+-------------------------------------------
+
+SELECT w2.id from Weather w1, Weather w2 WHERE w2.temperature > w1.temperature AND subdate(w2.recordDate, 1) = w1.recordDate;
+
+Second Solution:
+------------------------------------------
+
+Select A.id from Weather A, Weather B where DATEDIFF(Day, B.recordDate, A.recordDate)= 1 and A.temperature > B.temperature
+Select A.id from Weather A, Weather B where DATEDIFF(Day,CAST(B.recordDate as DATE),CAST( A.recordDate AS DATE)) = 1 and A.temperature > B.temperature
+
+Third Solution:
+---------------------------------------------------
+
+Select A.id from Weather A, Weather B where DATEADD(Day, 1, B.recordDate) = A.recordDate and A.temperature > B.temperature

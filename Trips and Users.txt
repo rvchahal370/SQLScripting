@@ -1,0 +1,119 @@
+Trips and Users
+==============================================
+
+Table: Trips
+
++-------------+----------+
+| Column Name | Type     |
++-------------+----------+
+| id          | int      |
+| client_id   | int      |
+| driver_id   | int      |
+| city_id     | int      |
+| status      | enum     |
+| request_at  | date     |     
++-------------+----------+
+id is the primary key for this table.
+The table holds all taxi trips. Each trip has a unique id, while client_id and driver_id are foreign keys to the users_id at the Users table.
+Status is an ENUM type of ('completed', 'cancelled_by_driver', 'cancelled_by_client').
+ 
+
+Table: Users
+
++-------------+----------+
+| Column Name | Type     |
++-------------+----------+
+| users_id    | int      |
+| banned      | enum     |
+| role        | enum     |
++-------------+----------+
+users_id is the primary key for this table.
+The table holds all users. Each user has a unique users_id, and role is an ENUM type of ('client', 'driver', 'partner').
+banned is an ENUM type of ('Yes', 'No').
+ 
+
+The cancellation rate is computed by dividing the number of canceled (by client or driver) requests with unbanned users by the total number of requests with unbanned users on that day.
+
+Write a SQL query to find the cancellation rate of requests with unbanned users (both client and driver must not be banned) each day between "2013-10-01" and "2013-10-03". Round Cancellation Rate to two decimal points.
+
+Return the result table in any order.
+
+First Solution
+----------------------------------------------------
+
+SELECT
+    request_at AS Day,
+    ROUND((SUM(CASE WHEN status != 'completed' THEN 1 ELSE 0 END)/COUNT(DISTINCT id)),2) AS 'Cancellation Rate'
+FROM Trips
+WHERE request_at BETWEEN '2013-10-01'
+AND '2013-10-03'
+AND client_id NOT IN (
+    SELECT
+        user_id
+    FROM Users
+    WHERE banned = 'Yes'
+)
+AND driver_id NOT IN (
+    SELECT
+        user_id
+    FROM Users
+    WHERE banned = 'Yes'
+)
+GROUP BY request_at;
+
+Second Solution
+-----------------------------------------------
+
+select request_at as 'Day',
+    Round(
+        sum(
+            case 
+                when t1.client_id not in (select users_id from Users where banned = 'Yes') 
+                    and t1.driver_id not in (select users_id from Users where banned = 'Yes')
+                    and t1.status != 'completed'
+                then 1
+                else 0
+            end
+        )/
+        sum(
+            case 
+                when t1.client_id not in (select users_id from Users where banned = 'Yes') 
+                    and t1.driver_id not in (select users_id from Users where banned = 'Yes')
+                then 1
+                else 0
+            end
+        ),
+        2
+    ) as 'Cancellation Rate'
+from trips t1
+where t1.client_id not in (select users_id from Users where banned = 'Yes') 
+    and t1.driver_id not in (select users_id from Users where banned = 'Yes')
+    and request_at between "2013-10-01" and "2013-10-03"
+group by request_at
+
+Third Solution
+----------------------------------------
+
+Select request_at Day,
+ROUND(SUM(CASE WHEN Status != 'completed' THEN 1 ELSE 0 END)/COUNT(status),2) AS 'CancellationRate'
+from Trips where Client_id NOT IN (Select User_id from Users where banned = 'Yes') AND 
+Driver_id NOT IN (Select User_id from Users where Banned = 'Yes') AND 
+request_at >= '2013-10-01' and request_at <= '2013-10-03' Group by request_at
+
+
+Fourth Solution
+------------------------------------------------
+
+with a as (select client_id, driver_id, request_at from Trips where status in ("cancelled_by_driver",           "cancelled_by_client")
+    and client_id in (select users_id from Users where banned = "No")
+    and driver_id in (select users_id from Users where banned = "No")),
+    
+b as (select count(client_id) as total_users, request_at from Trips where
+      client_id in (select users_id from Users where banned = "No")
+      and driver_id in (select users_id from Users where banned = "No")
+     group by request_at)
+     
+select b.request_at as "Day", round((select count(a.client_id) from a where a.request_at = b.request_at)/b.total_users, 2) as "Cancellation Rate"
+from b
+where b.request_at between "2013-10-01" and "2013-10-03"
+group by b.request_at

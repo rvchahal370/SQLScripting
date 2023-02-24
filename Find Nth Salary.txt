@@ -1,0 +1,42 @@
+Table has been given with the Employee ID and salary
+
+In that case we have to find 2nd highest salary but if their is only one record than the system should return NULL
+
+If their are two duplicate records (Example: 100, 100) than system should also return NULL for the 2nd highest salary
+
+In process to find the Nth salary all duplicate records should be counted as single records
+Example: For the salary 700 1st Highest Salary
+                        600 2nd highest Salary
+                        600 2nd Highest Salary
+                        500 3rd Highest Salary
+                        400 4th Highest Salary
+                        300 5th Highest Salary
+
+1st Possible Solution:
+
+Select Max(Salary) AS SecondHighestSalary from EmployeeSalary where Salary < (Select Max(Salary) from EmployeeSalary)
+
+--It will not be appropriate if we will be having lots of records or if we want to find 5th or 6th highest salary
+
+
+2nd Possible Solution:
+
+Select Salary AS SecondHighestSalary from EmployeeSalary Order By Salary Desc Limit 1 Offset 1
+
+Note: Offset means eliminitaing/descarding first record from the top, Limit 1 means only showing 1 record
+--It will not be working at runtime because in case if there is only one salary record as 100 then it will return nothing but it should return NULL
+
+Select IFNULL((Select Salary from EmployeeSalary Order By Salary DESC LIMIT 1 OFFSET), NULL) AS SecondHighestSalary
+
+--It will also not be working when their will be only 2 salary duplicate records like 100, 100. Above query output will be 100 but it should be NULL
+
+Select IFNULL(Select DISTINCT salary from EmployeeSalary Order By DESC LIMIT 1 OFFSET 1 ) AS SecondHighestSalary
+
+-- Now it will be throwing an correct information
+
+3rd possible solution:
+
+Select IFNULL(Select A.Salary from (select DISTINCT Salary, DENSE_RANK() OVER (Order By Salary DESC) AS Rank from EmployeeSalary) A where A.Rank = 2) AS SecondHighestSalary
+
+
+
